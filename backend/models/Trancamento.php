@@ -19,12 +19,12 @@ use Yii;
  * @property string $justificativa
  * @property string $documento
  * @property integer $status
- * @property string $nomeResponsavel;
  * 
  * Obtained through relationships:
  * 
  * @property Aluno $aluno
  * @property User $orientador0
+ * @property User $responsavel
  * 
  * Symbolic, responsible for business rules and search:
  * 
@@ -43,7 +43,6 @@ class Trancamento extends \yii\db\ActiveRecord
     public $dataSolicitacao0;
     public $dataInicio0;
     public $prevTermino0;
-    public $nomeResponsavel; // o usuario que solicitou o trancamento
 
     /**
      * @inheritdoc
@@ -59,16 +58,17 @@ class Trancamento extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['idAluno', 'dataSolicitacao', 'dataInicio', 'dataInicio0', 'prevTermino', 'prevTermino0', /*'dataTermino',*/ 'justificativa', /*'tipo', 'status'*/], 'required'],
+            [['idAluno', 'dataSolicitacao', 'dataInicio', 'dataInicio0', 'prevTermino', 'prevTermino0', 'justificativa', 'qtd_dias'], 'required'],
             [['documento', 'dataSolicitacao0'], 'required', 'on' => 'create'],
             [['idAluno', 'tipo', 'status'], 'integer'],
             [['matricula', 'orientador','dataSolicitacao', 'dataInicio', 'prevTermino', 'dataTermino', 'dataInicio0', 'dataSolicitacao0'], 'safe'],
             [['dataSolicitacao0', 'dataInicio0', 'prevTermino0'], 'date', 'format' => 'php:d/m/Y'],
             [['dataInicio0'], 'validateDataInicio0'],
             [['prevTermino0'], 'validatePrevTermino0'],
-            [['nomeResponsavel'], 'string', 'max' => 300],
+            [['id_responsavel'], 'integer'],
+            [['qtd_dias'], 'integer'],
             [['documento'], 'string'],
-            [['justificativa', 'nomeResponsavel'], 'string', 'max' => 250],
+            [['justificativa'], 'string', 'max' => 250],
             [['idAluno'], 'exist', 'skipOnError' => true, 'targetClass' => Aluno::className(), 'targetAttribute' => ['idAluno' => 'id']],
         ];
     }
@@ -88,11 +88,12 @@ class Trancamento extends \yii\db\ActiveRecord
             'dataInicio' => 'Data de Início',
             'dataInicio0' => 'Data de Início',
             'orientador' => 'Orientador',
-            'prevTermino' => 'Previsão de Término',
+            'prevTermino' => 'Data de Término',
             'prevTermino0' => 'Previsão de Término',
             'dataTermino' => 'Data de Término',
             'justificativa' => 'Justificativa',
-            'nomeResponsavel' => 'Nome do Responsável',
+            'id_responsavel' => 'Responsável',
+            'qtd_dias' => 'Quantidade de Dias',
             'documento' => 'Documento',
             'tipo' => 'Tipo',
             'status' => 'Status',
@@ -236,9 +237,10 @@ class Trancamento extends \yii\db\ActiveRecord
         }
     }
 
-    public function getResponsavel(){
-        return $this->getAttribute("nomeResponsavel");
+    public function getResponsavel() {
+        return $this->hasOne(User::className(), ['id' => 'id_responsavel']);
     }
+
 
     public function getId()
     {

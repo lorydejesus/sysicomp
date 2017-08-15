@@ -122,9 +122,8 @@ class TrancamentoController extends Controller
 
 
         // registra quem solicitou este trancamento
-        $usuario_logado_id = \Yii::$app->user->id;
-        $nome_usuario = User::find()->where(['id' => $usuario_logado_id])->one()->nome;
-        $model->setAttribute("nomeResponsavel", $nome_usuario);
+
+        $model->id_responsavel = \Yii::$app->user->id;
 
         if ($model->load(Yii::$app->request->post())) {
 

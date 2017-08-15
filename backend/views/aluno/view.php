@@ -126,6 +126,7 @@ $this->registerCss("
     ");
 
     $add_trancamento_url = Url::to(['trancamento/create', 'idAluno' => $model->id]);
+    $add_prorrogacao_url = Url::to(['prorrogacao/create', 'idAluno' => $model->id]);
     ?>
 
 
@@ -147,10 +148,15 @@ $this->registerCss("
                     'dataSolicitacao',
                     'dataInicio',
                     'prevTermino',
-                    'justificativa',
-                    'responsavel',
+                    'qtd_dias',
+                    [
+                        'label' => 'Responsável',
+                        'value' => function ($model) {
+                            return $model->responsavel->nome;
+                        },
+                    ],
                     ['class' => 'yii\grid\ActionColumn',
-                        'template'=>'{update} {delete}',
+                        'template'=>'{view} {update} {delete}',
                         'buttons'=>[
                             'delete' => function ($url, $model) {
                                 $url = Url::to(['trancamento/delete', 'id' => $model->id]);
@@ -167,6 +173,83 @@ $this->registerCss("
                                 $url = Url::to(['trancamento/update', 'id' => $model->id]);
 
                                 return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url,
+                                    [
+                                        'title'        => 'update',
+                                        'data-method'  => 'post',
+                                    ]
+                                );
+                            },
+                            'view' => function ($url, $model) {
+                                $url = Url::to(['trancamento/view', 'id' => $model->id]);
+
+                                return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url,
+                                    [
+                                        'title'        => 'update',
+                                        'data-method'  => 'post',
+                                    ]
+                                );
+                            }
+
+                        ]
+                    ]
+                ]
+            ]) ?>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading flex-container">
+            <h3 class="panel-title"><b>Prorrogações</b></h3>
+            <?= Html::a('<span class="glyphicon glyphicon-plus add-btn"></span>', $add_prorrogacao_url,
+                [
+                    'title'        => 'create',
+                    'data-method'  => 'post',
+                ]
+            );
+            ?>
+        </div>
+        <div class="panel-body">
+            <?= GridView::widget([
+                'dataProvider'=>$prorrogacoes_provider,
+                'columns' => [
+                    'dataSolicitacao',
+                    'dataInicio',
+                    'data_termino',
+                    'qtdDias',
+                    [
+                        'label' => 'Responsável',
+                        'value' => function ($model) {
+                            return $model->responsavel->nome;
+                        },
+                    ],
+                    ['class' => 'yii\grid\ActionColumn',
+                        'template'=>'{view} {update} {delete}',
+                        'buttons'=>[
+                            'delete' => function ($url, $model) {
+                                $url = Url::to(['prorrogacao/delete', 'id' => $model->id]);
+
+                                return Html::a('<span class="glyphicon glyphicon-trash"></span>', $url,
+                                    [
+                                        'title'        => 'delete',
+                                        'data-confirm' => Yii::t('yii', 'Deletar Trancamento?'),
+                                        'data-method'  => 'post',
+                                    ]
+                                );
+                            },
+                            'update' => function ($url, $model) {
+                                $url = Url::to(['prorrogacao/update', 'id' => $model->id]);
+
+                                return Html::a('<span class="glyphicon glyphicon-pencil"></span>', $url,
+                                    [
+                                        'title'        => 'update',
+                                        'data-method'  => 'post',
+                                    ]
+                                );
+                            },
+                            'view' => function ($url, $model) {
+                                $url = Url::to(['prorrogacao/view', 'id' => $model->id]);
+
+                                return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url,
                                     [
                                         'title'        => 'update',
                                         'data-method'  => 'post',

@@ -16,28 +16,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <!--h1><?= Html::encode($this->title) ?></h1-->
 
     <p>
-        <?= Html::a('<span class="glyphicon glyphicon-arrow-left"></span> Voltar', ['index'], ['class' => 'btn btn-warning']) ?>
-
-        <?php
-            if ($model->status==1) {
-                echo Html::a('<span class="glyphicon glyphicon-remove"></span> Encerrar', ['encerrar', 'id' => $model->id], [
-                        'class' => 'btn btn-danger',
-                        'data' => [
-                                    'confirm' => 'Encerrar o trancamento?',
-                                    'method' => 'post',
-                                  ],
-                        ]);
-            }
-            else {
-                echo Html::a('<span class="glyphicon glyphicon-ok"></span> Ativar', ['ativar', 'id' => $model->id], [
-                        'class' => 'btn btn-success',
-                        'data' => [
-                                    'confirm' => 'Ativar o trancamento? Essa ação apagará a data de encerramento atual!',
-                                    'method' => 'post',
-                                  ],
-                        ]);
-            }
-        ?>
 
         <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Editar', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('<span class="fa fa-trash-o"></span> Excluir', ['delete', 'id' => $model->id], [
@@ -106,7 +84,7 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
         [
             'attribute' => 'nomeResponsavel',
-            'value' => $model->getAttribute("nomeResponsavel")
+            'value' => $model->responsavel->nome
         ],
         [
             'attribute' => 'documento',

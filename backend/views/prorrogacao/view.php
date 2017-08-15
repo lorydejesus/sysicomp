@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\widgets\DetailView;
 
 /* @var $this yii\web\View */
@@ -15,7 +16,6 @@ $this->params['breadcrumbs'][] = $this->title;
     <!--h1><?= Html::encode($this->title) ?></h1-->
 
     <p>
-        <?= Html::a('<span class="glyphicon glyphicon-arrow-left"></span> Voltar', ['index'], ['class' => 'btn btn-warning']) ?>
         <?= Html::a('<span class="glyphicon glyphicon-edit"></span> Editar', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('<span class="fa fa-trash-o"></span> Excluir', ['delete', 'id' => $model->id], [
             'class' => 'btn btn-danger',
@@ -25,6 +25,10 @@ $this->params['breadcrumbs'][] = $this->title;
             ],
         ]) ?>
     </p>
+
+    <?php
+        $aluno_url = Url::to(['aluno/view', 'id' => $model->idAluno]);
+    ?>
 
     <?= DetailView::widget([
         'model' => $model,
@@ -37,7 +41,8 @@ $this->params['breadcrumbs'][] = $this->title;
                 //'idAluno',
             [
                 'attribute' => 'idAluno',
-                'value' => $model->aluno->nome
+                'value' => Html::a($model->aluno->nome, $aluno_url),
+                'format' => 'raw'
             ],
             [
                 'attribute' => 'orientador',
@@ -61,6 +66,14 @@ $this->params['breadcrumbs'][] = $this->title;
             [
                 'attribute' => 'qtdDias',
                 'label' => 'Quantidade de Dias'
+            ],
+            [
+                'attribute' => 'data_termino',
+                'value' => date('d/m/Y', strtotime($model->data_termino))
+            ],
+            [
+                'attribute' => 'nomeResponsavel',
+                'value' => $model->responsavel->nome
             ],
             'justificativa:ntext',
             [

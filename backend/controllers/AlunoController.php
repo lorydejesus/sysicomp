@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use app\models\Prorrogacao;
 use Yii;
 use app\models\Aluno;
 use app\models\Defesa;
@@ -151,6 +152,13 @@ class AlunoController extends Controller
             ],
         ]);
 
+        $prorrogacoes_provider = new ActiveDataProvider([
+            'query' => Prorrogacao::find()->where(['idAluno' => $id]),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+
 
         $linhaPesquisa = new LinhaPesquisa();
         $linhaPesquisa = $linhaPesquisa->getLinhaPesquisaNome($model->area);
@@ -167,6 +175,7 @@ class AlunoController extends Controller
             'model' => $model,
             'defesas' => $defesas,
             'trancamentos_provider' => $trancamentos_provider,
+            'prorrogacoes_provider' => $prorrogacoes_provider
         ]);
     }
 
