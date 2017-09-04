@@ -127,6 +127,8 @@ $this->registerCss("
 
     $add_trancamento_url = Url::to(['trancamento/create', 'idAluno' => $model->id]);
     $add_prorrogacao_url = Url::to(['prorrogacao/create', 'idAluno' => $model->id]);
+
+
     ?>
 
 

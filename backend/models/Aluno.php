@@ -2,7 +2,10 @@
 
 namespace app\models;
 
+use DateTime;
 use Yii;
+use yii\helpers\VarDumper;
+use yii\web\Controller;
 use yiibr\brvalidator\CpfValidator;
 
 use yii\db\Query;
@@ -102,7 +105,47 @@ class Aluno extends \yii\db\ActiveRecord
         ];
     }
 
+
+
     public function beforeSave($insert){
+        // o codigo a seguir armazena alteracoes realizadas no model
+        // para consultas futuras por parte dos secretarios
+        // a sua intencao eh manter um registro da serie historica
+        // de alteracoes dos dados do aluno
+        if(!$this->isNewRecord){ // queremos pegar apenas updates
+            $old = $this->getOldAttributes();
+            $new = $this->getDirtyAttributes();
+            $diff = array_diff_assoc($new, $old); // apenas os que mudaram
+
+            $valid_diff = [];
+
+            foreach ($diff as $attr => $value) {
+                $date_pattern = "/\d\d\-\d\d\-\d\d\d\d/";
+
+                if (preg_match($date_pattern, $value)){
+                    // isso aqui tem a unica finalidade de lidar com as cagadas que
+                    // fizeram com as datas nesse sistema. como as datas tao em formatos
+                    // diferentes, o array_diff sempre acusa diferencas nao existentes.
+                    // essas diferencas sao checadas manualmente aqui
+
+                    $new_value = DateTime::createFromFormat('d-m-Y', $new[$attr])->format('d-m-Y');
+                    $old_value = DateTime::createFromFormat('Y-m-d', $old[$attr])->format('d-m-Y');
+
+                    if($old_value != $new_value){
+                        $valid_diff[$attr] = ['old_value' => $old_value, 'new_value' => $new_value];
+                    }
+                }else{
+                    if($new[$attr] != $old[$attr]){
+                        $valid_diff[$attr] = ['old_value' => $old[$attr], 'new_value' => $new[$attr]];
+                    }
+                }
+
+            }
+
+            Yii::info("NEW DIFF => " . VarDumper::dumpAsString($valid_diff), "update");
+        }
+        
+        // aqui termina o codigo do log das alteracoes
 
         if (parent::beforeSave($insert)) {
             if($this->dataingresso) $this->dataingresso = date('Y-m-d', strtotime($this->dataingresso));

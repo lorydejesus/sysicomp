@@ -13,6 +13,7 @@ use yii\filters\AccessControl;
 use common\models\User;
 use common\models\LinhaPesquisa;
 use app\models\AlunoSearch;
+use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -270,6 +271,7 @@ class AlunoController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+
         if($model->dataingresso) $model->dataingresso = date('d-m-Y', strtotime($model->dataingresso));
 		if($model->datanascimento) $model->datanascimento = date('d-m-Y', strtotime($model->datanascimento));
         if($model->dataExameProf) $model->dataExameProf =  date('d-m-Y', strtotime($model->dataExameProf));
