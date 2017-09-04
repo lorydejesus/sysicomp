@@ -1,5 +1,6 @@
 <?php
 
+use app\models\Aluno;
 use yii\helpers\Html;
 use yii\widgets\DetailView;
 use yii\grid\GridView;
@@ -99,7 +100,7 @@ $this->registerCss("
             ],
             [   'label' => 'Status',
                 'attribute' => 'status',
-                'value' => $model->status == 0 ? 'Aluno Corrente': 'Aluno Egresso'
+                'value' => Aluno::getStatusFromId($model->status)
             ],
             [
                 'label' => 'Data de Ingresso',
@@ -259,6 +260,32 @@ $this->registerCss("
                                 );
                             }
                         ]
+                    ]
+                ]
+            ]) ?>
+        </div>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title"><b>Alterações Cadastrais</b></h3>
+        </div>
+        <div class="panel-body">
+            <?= GridView::widget([
+                'dataProvider'=>$modifications_provider,
+                'columns' => [
+                    'atributo',
+                    'antigo_valor',
+                    'novo_valor',
+                    [
+                        'attribute' => 'data',
+                        'format' => ['date', 'php:d/m/Y']
+                    ],
+                    [
+                        'label' => 'Responsável',
+                        'value' => function ($model) {
+                            return $model->responsavel->nome;
+                        },
                     ]
                 ]
             ]) ?>

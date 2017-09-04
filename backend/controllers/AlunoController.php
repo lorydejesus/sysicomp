@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use app\models\AlunoModification;
 use app\models\Prorrogacao;
 use Yii;
 use app\models\Aluno;
@@ -160,6 +161,17 @@ class AlunoController extends Controller
             ],
         ]);
 
+        $modifications_provider = new ActiveDataProvider([
+            'query' => AlunoModification::find()->where(['id_aluno' => $id]),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+            'sort' => [
+                'defaultOrder' => [
+                    'data' => SORT_DESC
+                ]
+            ]
+        ]);
 
         $linhaPesquisa = new LinhaPesquisa();
         $linhaPesquisa = $linhaPesquisa->getLinhaPesquisaNome($model->area);
@@ -176,7 +188,8 @@ class AlunoController extends Controller
             'model' => $model,
             'defesas' => $defesas,
             'trancamentos_provider' => $trancamentos_provider,
-            'prorrogacoes_provider' => $prorrogacoes_provider
+            'prorrogacoes_provider' => $prorrogacoes_provider,
+            'modifications_provider' => $modifications_provider
         ]);
     }
 
