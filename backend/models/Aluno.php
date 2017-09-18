@@ -124,12 +124,14 @@ class Aluno extends \yii\db\ActiveRecord
                     // fizeram com as datas nesse sistema. como as datas estao em formatos
                     // diferentes, o array_diff sempre acusa diferencas nao existentes.
                     // essas diferencas sao checadas manualmente aqui
+                    // o if checa se eh possivel fazer o parse da data, pq as vezes da uns bagulho estranho
+                    if(DateTime::createFromFormat('d-m-Y', $new[$attr]) && DateTime::createFromFormat('Y-m-d', $old[$attr])){
+                        $new_value = DateTime::createFromFormat('d-m-Y', $new[$attr])->format('d-m-Y');
+                        $old_value = DateTime::createFromFormat('Y-m-d', $old[$attr])->format('d-m-Y');
 
-                    $new_value = DateTime::createFromFormat('d-m-Y', $new[$attr])->format('d-m-Y');
-                    $old_value = DateTime::createFromFormat('Y-m-d', $old[$attr])->format('d-m-Y');
-
-                    if($old_value != $new_value){
-                        $valid_diff[$attr] = ['old_value' => $old_value, 'new_value' => $new_value];
+                        if($old_value != $new_value){
+                            $valid_diff[$attr] = ['old_value' => $old_value, 'new_value' => $new_value];
+                        }
                     }
                 }else{
                     if($new[$attr] != $old[$attr]){
