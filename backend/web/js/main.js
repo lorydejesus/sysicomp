@@ -76,7 +76,7 @@ $(document).ready( function() {
 
 
 
-$( window ).load(function(){
+$( window ).on('load',function(){
 
 /*Inicio das exibições das vagas e cotas do Edital*/
 	if($('#form_mestrado').val() == 1){
