@@ -14,7 +14,7 @@ $this->params['breadcrumbs'][] = 'Editar';
 
     <!--h1><?= Html::encode($this->title) ?></h1-->
 
-    <?= Html::a('<span class="glyphicon glyphicon-arrow-left"></span> Voltar', ['trancamento/view', 'id' => $model->id], ['class' => 'btn btn-warning']) ?>
+    <?= Html::a('<span class="glyphicon glyphicon-arrow-left"></span> Voltar', ['aluno/view', 'id' => $model->idAluno], ['class' => 'btn btn-warning']) ?>
     <br><br>
     <?= $this->render('_updateForm', [
         'model' => $model,

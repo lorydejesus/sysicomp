@@ -6,6 +6,7 @@ use Yii;
 use yii\filters\AccessControl;
 use app\models\Prorrogacao;
 use app\models\ProrrogacaoSearch;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -106,8 +107,14 @@ class ProrrogacaoController extends Controller
 
         $model->dataSolicitacao = date("Y-m-d"); //Get the current date
         $model->dataSolicitacao0 = date('d/m/Y', strtotime($model->dataSolicitacao));
+
+        $model->data_termino = date("Y-m-d"); //Get the current date
+        $model->dataTermino0 = date('d/m/Y', strtotime($model->data_termino));
+
         $model->qtdDias=180;
         $model->status=1; //Defines status as active
+
+        $model->id_responsavel = \Yii::$app->user->id;
         
         if ($model->load(Yii::$app->request->post())) {
 
@@ -117,6 +124,13 @@ class ProrrogacaoController extends Controller
                 $model->dataSolicitacao = $model->dataSolicitacao[2]."-".$model->dataSolicitacao[1]."-".$model->dataSolicitacao[0];
             }
             else $model->dataSolicitacao = '';
+
+            //Required to adapt the date inserted in the view to the format that will be inserted into the database
+            $model->data_termino = explode("/", $model->dataTermino0);
+            if (sizeof($model->data_termino) == 3) {
+                $model->data_termino = $model->data_termino[2]."-".$model->data_termino[1]."-".$model->data_termino[0];
+            }
+            else $model->data_termino = '';
 
 
             //Required to adapt the date inserted in the view to the format that will be inserted into the database
@@ -224,6 +238,8 @@ class ProrrogacaoController extends Controller
 
         $documento = $model->documento;
 
+        $aluno_id = $model->idAluno;
+
         if ($model->delete()) {
             //Delete the document related to the stop out
             //getcwd() is used to get the current working directory (cwd)
@@ -233,7 +249,9 @@ class ProrrogacaoController extends Controller
         else {
             $this->mensagens('error', 'Erro', 'Falha ao deletar prorrogação.');
         }
-        return $this->redirect(['index']);
+
+        $url = Url::to(['aluno/view', 'id' => $aluno_id]);
+        return $this->redirect($url);
     }
 
     /**

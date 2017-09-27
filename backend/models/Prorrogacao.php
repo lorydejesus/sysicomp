@@ -14,6 +14,7 @@ use Yii;
  * @property integer $idAluno
  * @property string $dataSolicitacao
  * @property string $dataInicio
+ * @property string $data_termino
  * @property integer $qtdDias
  * @property string $justificativa
  * @property integer $status
@@ -30,6 +31,7 @@ use Yii;
  * @property string linhaPesquisa
  * @property string dataSolicitacao0
  * @property string dataInicio0
+ * @property string dataTermino0
  * 
  */
 class Prorrogacao extends \yii\db\ActiveRecord
@@ -39,6 +41,7 @@ class Prorrogacao extends \yii\db\ActiveRecord
     public $linhaPesquisa;
     public $dataSolicitacao0;
     public $dataInicio0;
+    public $dataTermino0;
 
     /**
      * @inheritdoc
@@ -58,9 +61,11 @@ class Prorrogacao extends \yii\db\ActiveRecord
             [['dataSolicitacao0'], 'required', 'on' => 'create'],
             [['id', 'idAluno', 'qtdDias', 'status'], 'integer'],
             [['matricula', 'orientador', 'dataSolicitacao', 'dataInicio', 'dataInicio0', 'dataSolicitacao0'], 'safe'],
-            [['dataSolicitacao0', 'dataInicio0'], 'date', 'format' => 'php:d/m/Y'],
+            [['dataSolicitacao0', 'dataInicio0', 'dataTermino0'], 'date', 'format' => 'php:d/m/Y'],
             [['dataInicio0'], 'validateDataInicio0'],
+            [['dataTermino0'], 'validateDataTermino0'],
             [['justificativa', 'documento'], 'string'],
+            [['id_responsavel'], 'integer'],
             [['idAluno'], 'exist', 'skipOnError' => true, 'targetClass' => Aluno::className(), 'targetAttribute' => ['idAluno' => 'id']],
         ];
     }
@@ -84,6 +89,7 @@ class Prorrogacao extends \yii\db\ActiveRecord
             'justificativa' => 'Justificativa',
             'documento' => 'Documento',
             'status' => 'Status',
+            'id_responsavel' => 'Responsável'
         ];
     }
 
@@ -97,6 +103,18 @@ class Prorrogacao extends \yii\db\ActiveRecord
     public function getAluno()
     {
         return $this->hasOne(Aluno::className(), ['id' => 'idAluno']);
+    }
+
+    /**
+     * Gets the responsavel object
+     *
+     * @author Pedro Frota <pvmf@icomp.ufam.edu.br>
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getResponsavel()
+    {
+        return $this->hasOne(User::className(), ['id' => 'id_responsavel']);
     }
 
     /**
@@ -168,4 +186,36 @@ class Prorrogacao extends \yii\db\ActiveRecord
             }
         }
     }
+
+    public function validateDataTermino0($attribute, $params) {
+        //Number 1 at the end is required to avoid conflicts between variable names
+        //I know I could reference class variables using 'this', but I think by doing so, the code
+        //becomes more readable. (Or at least 'less worse' than the other way)
+
+        //Symbolic "declarations" of variables
+        //$dataInicio1;
+        //$prevTermino1;
+
+        //Required to adapt the date inserted in the view to the format that will be used here
+        $dataInicio1 = explode("/", $this->dataInicio0);
+        if (sizeof($dataInicio1) == 3) {
+            $dataInicio1 = $dataInicio1[2]."-".$dataInicio1[1]."-".$dataInicio1[0];
+        }
+        else $dataInicio1 = '';
+
+        //Required to adapt the date inserted in the view to the format that will be used here
+        $dataTermino1 = explode("/", $this->dataTermino0);
+        if (sizeof($dataTermino1) == 3) {
+            $dataTermino1 = $dataTermino1[2]."-".$dataTermino1[1]."-".$dataTermino1[0];
+        }
+        else $dataTermino1 = '';
+
+        if (!$this->hasErrors()) {
+            if (date("Y-m-d", strtotime($dataTermino1)) < date("Y-m-d", strtotime($dataInicio1))) {
+                $this->addError($attribute, 'Por favor, informe uma data posterior ou igual à data de início');
+            }
+        }
+    }
+
+
 }

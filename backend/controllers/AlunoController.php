@@ -2,14 +2,19 @@
 
 namespace backend\controllers;
 
+use app\models\AlunoModification;
+use app\models\Prorrogacao;
 use Yii;
 use app\models\Aluno;
 use app\models\Defesa;
 use app\models\Trancamento;
+use yii\data\ActiveDataProvider;
+use yii\data\ArrayDataProvider;
 use yii\filters\AccessControl;
 use common\models\User;
 use common\models\LinhaPesquisa;
 use app\models\AlunoSearch;
+use yii\helpers\VarDumper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -142,6 +147,32 @@ class AlunoController extends Controller
             ->orderBy('idDefesa')
             ->all();
 
+        $trancamentos_provider = new ActiveDataProvider([
+            'query' => Trancamento::find()->where(['idAluno' => $id]),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+
+        $prorrogacoes_provider = new ActiveDataProvider([
+            'query' => Prorrogacao::find()->where(['idAluno' => $id]),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+        ]);
+
+        $modifications_provider = new ActiveDataProvider([
+            'query' => AlunoModification::find()->where(['id_aluno' => $id]),
+            'pagination' => [
+                'pageSize' => 20,
+            ],
+            'sort' => [
+                'defaultOrder' => [
+                    'data' => SORT_DESC
+                ]
+            ]
+        ]);
+
         $linhaPesquisa = new LinhaPesquisa();
         $linhaPesquisa = $linhaPesquisa->getLinhaPesquisaNome($model->area);
 
@@ -156,6 +187,9 @@ class AlunoController extends Controller
         return $this->render('view', [
             'model' => $model,
             'defesas' => $defesas,
+            'trancamentos_provider' => $trancamentos_provider,
+            'prorrogacoes_provider' => $prorrogacoes_provider,
+            'modifications_provider' => $modifications_provider
         ]);
     }
 
@@ -250,6 +284,7 @@ class AlunoController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+
         if($model->dataingresso) $model->dataingresso = date('d-m-Y', strtotime($model->dataingresso));
 		if($model->datanascimento) $model->datanascimento = date('d-m-Y', strtotime($model->datanascimento));
         if($model->dataExameProf) $model->dataExameProf =  date('d-m-Y', strtotime($model->dataExameProf));

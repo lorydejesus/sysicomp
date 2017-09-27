@@ -41,6 +41,17 @@ use kartik\widgets\Select2;
             ?>
         </div>
         <div class="row">
+            <?= $form->field($model, 'dataTermino0', ['options' => ['class' => 'col-md-3']])->widget(DatePicker::classname(), [
+                'language' => Yii::$app->language,
+                'options' => ['placeholder' => 'Selecione uma data',],
+                'pluginOptions' => [
+                    'format' => 'dd/mm/yyyy',
+                    'todayHighlight' => true
+                ]
+            ])->label("<font color='#FF0000'>*</font> <b>Data de Término:</b>")
+            ?>
+        </div>
+        <div class="row">
             <?= $form->field($model, 'qtdDias', ['options' => ['class' => 'col-md-3']])->textInput()->label("<font color='#FF0000'>*</font> <b>Quantidade de Dias:</b>") ?>
         </div>
         <div class="row">

@@ -2,14 +2,10 @@
 
 namespace app\models;
 
+use DateTime;
 use Yii;
+use yii\helpers\VarDumper;
 use yiibr\brvalidator\CpfValidator;
-
-use yii\db\Query;
-use yii\data\SqlDataProvider;
-use app\models\Trancamento;
-use yii\db\ActiveQuery;
-use yii\db\Connection;
 
 class Aluno extends \yii\db\ActiveRecord
 {
@@ -102,7 +98,89 @@ class Aluno extends \yii\db\ActiveRecord
         ];
     }
 
+    public static function getStatusFromId($id){
+        $statusAluno = [0 => 'Aluno Corrente',1 => 'Aluno Egresso',2 => 'Aluno Desistente',3 => 'Aluno Desligado',4 => 'Aluno Jubilado',5 => 'Aluno com Matrícula Trancada'];
+
+        return $statusAluno[$id];
+    }
+
     public function beforeSave($insert){
+        // o codigo a seguir armazena alteracoes realizadas no model
+        // para consultas futuras por parte dos secretarios
+        // a sua intencao eh manter um registro da serie historica
+        // de alteracoes dos dados do aluno
+        if(!$this->isNewRecord){ // queremos pegar apenas updates
+            $old = $this->getOldAttributes();
+            $new = $this->getDirtyAttributes();
+            $diff = array_diff_assoc($new, $old); // apenas os que mudam de valor
+
+            $valid_diff = [];
+
+            foreach ($diff as $attr => $value) {
+                $date_pattern = "/\d\d\-\d\d\-\d\d\d\d/";
+
+                if (preg_match($date_pattern, $value)){
+                    // isso aqui tem a unica finalidade de lidar com as cagadas que
+                    // fizeram com as datas nesse sistema. como as datas estao em formatos
+                    // diferentes, o array_diff sempre acusa diferencas nao existentes.
+                    // essas diferencas sao checadas manualmente aqui
+                    // o if checa se eh possivel fazer o parse da data, pq as vezes da uns bagulho estranho
+                    if(DateTime::createFromFormat('d-m-Y', $new[$attr]) && DateTime::createFromFormat('Y-m-d', $old[$attr])){
+                        $new_value = DateTime::createFromFormat('d-m-Y', $new[$attr])->format('d-m-Y');
+                        $old_value = DateTime::createFromFormat('Y-m-d', $old[$attr])->format('d-m-Y');
+
+                        if($old_value != $new_value){
+                            $valid_diff[$attr] = ['old_value' => $old_value, 'new_value' => $new_value];
+                        }
+                    }
+                }else{
+                    if($new[$attr] != $old[$attr]){
+                        $valid_diff[$attr] = ['old_value' => $old[$attr], 'new_value' => $new[$attr]];
+                    }
+                }
+
+            }
+
+            foreach ($valid_diff as $attr => $value){
+                $mod = new AlunoModification();
+
+                // preciso checar isso pq simplesmente NAO TEM RESTRICAO DE FK NA TABELA ALUNO
+                // pra poder fazer introspeccao
+                if($attr == 'orientador'){
+                    $mod->antigo_valor = User::find()->where(['id' => $value['old_value']])->one()->nome;
+                    $mod->novo_valor = User::find()->where(['id' => $value['new_value']])->one()->nome;
+                } else if($attr == 'area') {
+                    $mod->antigo_valor = LinhaPesquisa::find()->where(['id' => $value['old_value']])->one()->nome;
+                    $mod->novo_valor = LinhaPesquisa::find()->where(['id' => $value['new_value']])->one()->nome;
+                } else if ($attr == 'curso'){
+                    $mod->antigo_valor = "" . $value["old_value"] == '1' ? 'Mestrado' : 'Doutorado';
+                    $mod->novo_valor =  "" . $value["new_value"] == '1' ? 'Mestrado' : 'Doutorado';
+                } else if ($attr == 'regime'){
+                    $mod->antigo_valor = "" . $value["old_value"] == '1' ? 'Integral' : 'Parcial';
+                    $mod->novo_valor =  "" . $value["new_value"] == '1' ? 'Integral' : 'Parcial';
+                } else if ($attr == 'bolsista'){
+                    $mod->antigo_valor = "" . $value["old_value"] == '0' ? 'Não' : 'Sim';
+                    $mod->novo_valor =  "" . $value["new_value"] == '0' ? 'Não' : 'Sim';
+                } else if ($attr == 'status'){
+                    $mod->antigo_valor = Aluno::getStatusFromId($value["old_value"]);
+                    $mod->novo_valor =  Aluno::getStatusFromId($value["new_value"]);
+                }
+
+                else {
+                    $mod->antigo_valor = $value['old_value'];
+                    $mod->novo_valor = $value['new_value'];
+                }
+
+                $mod->atributo = $this->getAttributeLabel($attr);
+                $mod->id_responsavel = Yii::$app->user->id;
+                $mod->id_aluno = $this->getId();
+
+                $mod->save();
+            }
+
+        }
+
+        // ----- aqui termina o codigo do log das alteracoes -----
 
         if (parent::beforeSave($insert)) {
             if($this->dataingresso) $this->dataingresso = date('Y-m-d', strtotime($this->dataingresso));
@@ -146,7 +224,11 @@ class Aluno extends \yii\db\ActiveRecord
      */
 
     public function getTrancamentos() {
-        return $this->hasMany(Trancamentos::className(), ['idAluno' => 'id']);
+        return $this->hasMany(Trancamento::className(), ['idAluno' => 'id']);
+    }
+
+    public function getModifications() {
+        return $this->hasMany(AlunoModification::className(), ['id_aluno' => 'id']);
     }
 
     public function getDiasParaFormar() {

@@ -3,6 +3,7 @@ namespace backend\controllers;
 
 use Yii;
 use app\models\Aluno;
+use app\models\User;
 use yii\filters\AccessControl;
 use app\models\Trancamento;
 use app\models\TrancamentoSearch;
@@ -11,6 +12,7 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use kartik\mpdf\Pdf;
 use yii\helpers\Html;
+use yii\helpers\Url;
 
 /**
  * TrancamentoController implements the CRUD actions for Trancamento model.
@@ -106,6 +108,7 @@ class TrancamentoController extends Controller
         
         $model->idAluno = $idAluno;
 
+
         if (!$model->canDoStopOut() && !$ignoredWarning) {
             return $this->render('_limitWarn', [
                 'model'=>$model,
@@ -114,9 +117,14 @@ class TrancamentoController extends Controller
 
         $model->dataSolicitacao = date("Y-m-d"); //Get the current date
         $model->dataSolicitacao0 = date('d/m/Y', strtotime($model->dataSolicitacao));
-        $model->tipo=0; //Defines 'type' as 'Trancamento'
-        $model->status=1; //Defines status as active
-        
+        $model->tipo = 0; //Defines 'type' as 'Trancamento'
+        $model->status = 1; //Defines status as active
+
+
+        // registra quem solicitou este trancamento
+
+        $model->id_responsavel = \Yii::$app->user->id;
+
         if ($model->load(Yii::$app->request->post())) {
 
             //Required to adapt the date inserted in the view to the format that will be inserted into the database
@@ -168,6 +176,7 @@ class TrancamentoController extends Controller
                 $this->mensagens('error', 'Erro', 'Houve uma falha ao criar o trancamento.');
             }
         }
+
         return $this->render('create', [
             'model'=>$model,
         ]);
@@ -281,19 +290,23 @@ class TrancamentoController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
+        $aluno_id = $model->idAluno;
 
-        $documento = $model->documento;
+        // $documento = $model->documento;
 
         if ($model->delete()) {
             //Delete the document related to the stop out
             //getcwd() is used to get the current working directory (cwd)
-            unlink(getcwd().'/'.$documento);
+            // unlink(getcwd().'/'.$documento);
             $this->mensagens('success', 'Sucesso', 'Trancamento deletado com sucesso.');
         }
         else {
             $this->mensagens('error', 'Erro', 'Falha ao deletar trancamento.');
         }
-        return $this->redirect(['index']);
+
+        $url = Url::to(['aluno/view', 'id' => $aluno_id]);
+
+        return $this->redirect($url);
     }
     /**
      * Finds the Trancamento model based on its primary key value.

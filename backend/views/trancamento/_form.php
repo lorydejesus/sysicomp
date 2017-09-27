@@ -51,6 +51,9 @@ use kartik\widgets\Select2;
             ])->label("<font color='#FF0000'>*</font> <b>Previsão de Término:</b>")
             ?>
         </div>
+        <div class="row">
+            <?= $form->field($model, 'qtd_dias', ['options' => ['class' => 'col-md-3']])->textInput()->label("<font color='#FF0000'>*</font> <b>Quantidade de Dias:</b>") ?>
+        </div>
 		<div class="row">
             <?= $form->field($model, 'justificativa' , ['options' => ['class' => 'col-md-3']] )->textArea(['rows' => '6'])->label("<font color='#FF0000'>*</font> <b>Justificativa:</b>") ?>
         </div>
