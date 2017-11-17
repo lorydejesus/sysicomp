@@ -1,6 +1,6 @@
 # Sistema de Gerenciamento do IComp/UFAM
 
-Código do sistema de gerenciamento da graduação e pós-graduação do Instituto de Computação da UFAM. Professores responsáveis pelo código: David Fernandes de Oliveira e Arilo Cláudio Dias-Neto.
+Código do sistema de gerenciamento da graduação e pós-graduação do Instituto de Computação da UFAM. Professores responsáveis pelo código: David Fernandes de Oliveira e Arilo Cláudio Dias-Neto. oi.
 
 ## Como contribuir
 
