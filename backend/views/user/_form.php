@@ -7,7 +7,7 @@
 use yii\helpers\Html;
 use yii\bootstrap\ActiveForm;
 use yii\widgets\MaskedInput;
-use lo\widgets\Toggle;
+use dbfernandes\icomp\ICompToggleWidget;
 
 $perfis = ['1' => 'Administrador', '2' => 'Coordenador', '3' => 'Secretaria', '4' => 'Professor', '5' => 'Aluno'];
 
@@ -40,36 +40,27 @@ $perfis = ['1' => 'Administrador', '2' => 'Coordenador', '3' => 'Secretaria', '4
                         <?= $form->field($model, 'password', ['options' => ['class' => 'col-md-6 col-left']])->passwordInput()->label("Senha:")  ?>
                         <?= $form->field($model, 'password_repeat', ['options' => ['class' => 'col-md-6 col-right']])->passwordInput()->label("Repetir Senha:")  ?>
                         <div style="margin-bottom: 20px;"><b><font color='#FF0000'>*</font> Escolha o(s) perfil(s) correspondente a este usuário:</b></div>
-
                         <div class = "row">
-                            <?= $form->field($model, 'administrador', ['options' => ['class' => 'col-md-3']])->widget(Toggle::classname(), [
-                                'options' => [
-                                    'data-on' => 'Sim',
-                                    'data-off' => 'Não',
-                                    'data-onstyle' => 'primary',
-                                    'data-offstyle' => 'default'
-                            ]])?>
-                            <?= $form->field($model, 'coordenador', ['options' => ['class' => 'col-md-3']])->widget(Toggle::classname(), [
-                                'options' => [
-                                    'data-on' => 'Sim',
-                                    'data-off' => 'Não',
-                                    'data-onstyle' => 'primary',
-                                    'data-offstyle' => 'default'
-                            ]])?>
-                            <?= $form->field($model, 'secretaria', ['options' => ['class' => 'col-md-3', 'on' => 'Sim']])->widget(Toggle::classname(), [
-                                'options' => [
-                                    'data-on' => 'Sim',
-                                    'data-off' => 'Não',
-                                    'data-onstyle' => 'primary',
-                                    'data-offstyle' => 'default'
-                            ]])?>
-                            <?= $form->field($model, 'professor', ['options' => ['class' => 'col-md-3']])->widget(Toggle::classname(), [
-                                'options' => [
-                                    'data-on' => 'Sim',
-                                    'data-off' => 'Não',
-                                    'data-onstyle' => 'primary',
-                                    'data-offstyle' => 'default'
-                            ]])?>
+                            <?= $form->field($model, 'administrador', ['options' => ['class' => 'col-md-3']])->widget(ICompToggleWidget::className(), [
+                                'labelEnabled' => 'Sim',
+                                'labelDisabled' => 'Não',
+                            ]);
+                            ?>  
+                            <?= $form->field($model, 'coordenador', ['options' => ['class' => 'col-md-3']])->widget(ICompToggleWidget::className(), [
+                                'labelEnabled' => 'Sim',
+                                'labelDisabled' => 'Não',
+                            ]);
+                            ?>  
+                            <?= $form->field($model, 'secretaria', ['options' => ['class' => 'col-md-3']])->widget(ICompToggleWidget::className(), [
+                                'labelEnabled' => 'Sim',
+                                'labelDisabled' => 'Não',
+                            ]);
+                            ?>  
+                            <?= $form->field($model, 'professor', ['options' => ['class' => 'col-md-3']])->widget(ICompToggleWidget::className(), [
+                                'labelEnabled' => 'Sim',
+                                'labelDisabled' => 'Não',
+                            ]);
+                            ?>  
                         </div>
                     </div>
                 </div>
