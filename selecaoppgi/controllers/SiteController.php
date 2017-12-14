@@ -1,16 +1,16 @@
 <?php
-namespace frontend\controllers;
+namespace selecaoppgi\controllers;
 
 use Yii;
 use app\models\Candidato;
 use app\models\Edital;
 use PHPExcel;
-use frontend\models\LoginForm;
+use selecaoppgi\models\LoginForm;
 use common\models\LinhaPesquisa;
-use frontend\models\PasswordResetRequestForm;
-use frontend\models\ResetPasswordForm;
-use frontend\models\SignupForm;
-use frontend\models\ContactForm;
+use selecaoppgi\models\PasswordResetRequestForm;
+use selecaoppgi\models\ResetPasswordForm;
+use selecaoppgi\models\SignupForm;
+use selecaoppgi\models\ContactForm;
 use yii\base\InvalidParamException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;

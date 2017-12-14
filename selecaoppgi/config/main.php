@@ -7,13 +7,13 @@ $params = array_merge(
 );
 
 return [
-    'id' => 'app-frontend',
+    'id' => 'app-selecaoppgi',
     'basePath' => dirname(__DIR__),
     'sourceLanguage' => 'pt-Br',
     'language' => 'pt-Br',
     //'timeZone' => 'America/Manaus',
     'bootstrap' => ['log'],
-    'controllerNamespace' => 'frontend\controllers',
+    'controllerNamespace' => 'selecaoppgi\controllers',
     'components' => [
         'session' => [
             'name' => 'PHPFRONTENDSESSID',
@@ -31,7 +31,7 @@ return [
              'theme' => [
                  'pathMap' => [
                     //'@app/views' => '@vendor/dmstr/yii2-adminlte-asset/example-views/yiisoft/yii2-app/'
-                    '@app/views' => '@frontend/views/adminLTE/yiisoft/yii2-app/'
+                    '@app/views' => '@selecaoppgi/views/adminLTE/yiisoft/yii2-app/'
                  ],
              ],
         ],

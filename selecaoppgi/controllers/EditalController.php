@@ -1,6 +1,6 @@
 <?php
 
-namespace frontend\controllers;
+namespace selecaoppgi\controllers;
 
 use Yii;
 use app\models\Edital;

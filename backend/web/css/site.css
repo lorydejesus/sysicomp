@@ -30,6 +30,15 @@ body {
     padding-top: 20px;
 }
 
+.toggle {
+    width: 75.0398px !important; 
+    height: 33.0682px !important;
+}
+
+.toggle-group .btn {
+    padding: 4px 12px !important;
+}
+
 .jumbotron {
     text-align: center;
     background-color: transparent;
